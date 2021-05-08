@@ -6,22 +6,22 @@ ini_set('display_errors','1');
 * Setting up the database connection for PDO (PHP Data Object)
 */
 $dbname = "index_correlations";
-$dbuser = "******";
-$dbpass = "******";
+$dbuser = "youniform";
+$dbpass = "il1keSn0w!!";
 $host = "localhost";	
 $pdo = new PDO("mysql:host=$host;dbname=$dbname", $dbuser, $dbpass);
-
+$tableName = "DIA-entire-history";
 /**
 * This SQL query will need to incorporate a variable placeholder for the table name
 */
 $sql = "
-	SELECT * FROM `DIA-2016-2017`
+	SELECT * FROM  `$tableName`
 	";
 
 /**
 * Prepare the whole $stmt before execution
 */
-$stmt = $pdo->query($sql);
+$stmt = $pdo->prepare($sql);
 /**
 * Execute it, sending the finished query to the mysql database
 */
@@ -97,12 +97,36 @@ foreach ($response as $day) {
 // a couple stat calculations to show for the year
 $upPercent = count($upAndUp)/$trendUp*100;
 $downPercent = count($downAndDown)/$trendDown*100;
+$data = array(
+    "Total-Sample-Size" => count($response),
+    "OvernightUp+DayCloseUp-Percent:" => floor($upPercent*100)/100 . "%",
+    "OvernightDown+DayCloseDown-Percent:" => floor($downPercent*100)/100 . "&",
+    "TrendUp-Count:" => $trendUp,
+    "TrendDown-Count:" => $trendDown,
+    "DownAndDown-Total:" =>count($downAndDown),
+    "UpAndUp-Total:" =>count($upAndUp)
+);
 
 // echo makes things appear on the page, the quoted areas are some text or html markup
+require_once("./header.php");
+?>
+<div class="outer-container">
+    <div class="data-container">
+            <h3><?php echo $tableName;?></h3>
+            <?php foreach($data as $key=>$value):?>
+                <div class="ui-bg-darkest ui-font-lightest key"><span><?php echo $key;?></span></div>
+                <?php if (100 >= $value && 52 <= $value):?>
+                    <div class="trendIndicator"><span><?php echo $value;?></span></div>
+                <?php else:?>
+                    <div class="ui-bg-lightest ui-font-darkest value"><span><?php echo $value; ?></span></div>
+                <?php endif;?>
+            <?php endforeach;?>
+    </div>
+</div>
+<h3>Results from 2020-2021 Dow Jones Industrial Average</h3>";
 
-echo "<h3>Results from 2020-2021 Dow Jones Industrial Average</h3>";
-
-echo "Day ended on trend up, count out of 251: " . count($upAndUp)  ."  Occurance: " .$upPercent . "%<br/>"; 
-echo "Day ended on trend down, count out of 251: " . count($downAndDown) . "  Occurance: " . $downPercent . "%<br/>";
+Total population size:" . count($response) . "<br/>";
+echo "AfterHoursUp and DayCloseUp: " . count($upAndUp)  . "<br/>  Occurance: " . floor($upPercent*100)/100 . "%<br/>";
+echo "AfterHoursDown and DayCloseDown" . count($downAndDown) . "<br/>  Occurance: " . floor($downPercent*100)/100 . "%<br/>";
 
 
