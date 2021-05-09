@@ -8,7 +8,7 @@ ini_set('display_errors','1');
 $dbname = "index_correlations";
 $dbuser = "youniform";
 $dbpass = "il1keSn0w!!";
-$host = "localhost";	
+$host = "localhost";
 $pdo = new PDO("mysql:host=$host;dbname=$dbname", $dbuser, $dbpass);
 $tableName = "DIA-entire-history";
 /**
@@ -28,7 +28,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute();
 
 /**
-* Form an iterable $response object from the executed $stmt. FetchAll meaning the whole thing not just one row, PDO::FETCH_OBJ 
+* Form an iterable $response object from the executed $stmt. FetchAll meaning the whole thing not just one row, PDO::FETCH_OBJ
 * allows us to refer to each $day like this object notation: $day->Open vs associative array: $day["Open"]
 */
 $response = $stmt->fetchall(PDO::FETCH_OBJ);
@@ -61,12 +61,17 @@ foreach ($response as $day) {
 		echo "do nothing";
 	}
 	else {
-		// subtract one from current iteration value in order to reference yesterday using array nothing $array[$i] 
+		// subtract one from current iteration value in order to reference yesterday using array nothing $array[$i]
 		// for an array $foo = [20,36,"a string",false] if you wanted to get the value of $foo[1] it would reference 36
 		// $foo[2] would reference the third index which is "a string"
 		$yesterday = $i - 1;
 		$prevDay = $response[$yesterday];
-
+        $afterHrsChg = $day->Open - $response[$yesterday]->Close;
+        $afterHrsChgUpPct = $afterHrsChg / $response[$yesterday]->Close*100;
+        $amountChgUpUp = $day->Close - $day->Open;
+        $pctChgUpUp = $amountChgUpUp / $day->Open *100;
+        $amountChgDownDown = $day->Open - $day->Close;
+        $pctChgDownDown = $amountChgDownDown / $day->Open * 100;
 		/**
 		* Here I am creating $variables that hold a binary value (0 = false, 1=true)
 		* With computers it is much easier to make complex assertions by breaking them down into simpler yes/no
@@ -75,32 +80,34 @@ foreach ($response as $day) {
 		$down = $prevDay->Close > $day->Open;
 		$dayTrendUp = $day->Close > $day->Open;
 		$dayTrendDown = $day->Open > $day->Close;
-		$afterHrsChg = $day->Open - $response[$yesterday]->Close;
-		$afterHrsChgUpPct = $afterHrsChg / $response[$yesterday]->Close*100;
-		$amountChgUpUp = $day->Close - $day->Open;
-		$pctChgUpUp = $amountChgUpUp / $day->Open *100;
+
 
 		// If the after hours started up for that day, auto increment the trendUp value
 		if ($up) {
 			$trendUp++;
+			if ($up and $dayTrendUp) {
+			    $day->pctChgUpUp = $pctChgUpUp;
+			    array_push($upAndUp, $day);
+            }
+            if ($afterHrsChgUpPct > 0.5) {
+                $afterHrsChgUpTotal05++;
+                if ($dayTrendUp && $afterHrsChgUpPct > 0.5) {
+                    $day->amountChgUpUp = $amountChgUpUp;
+                    $day->pctChgUpUp = $pctChgUpUp;
+                    $day->afterHrsChg = $afterHrsChg;
+                    $day->afterHrsChgUpPct = $afterHrsChgUpPct;
+                    array_push($upAndUpFilterGt05, $day);
+                }
+            }
+
 		}
-		if ($up && $afterHrsChgUpPct > 0.5) {
-		    $afterHrsChgUpTotal05++;
-        }
 		// If the after hours started down for that day, auto increment the trendDown value
 		if ($down) {
 			$trendDown++;
-		}
-		// If after hours started day up and day close was up, file that into our $upAndUp array
-        if ($up and $dayTrendUp) {
-            array_push($upAndUp, $day);
+			if ($dayTrendDown) {
+			    $day->pctChgDownDown = $pctChgDownDown;
+			    array_push($downAndDown, $day);
             }
-		if ($up && $afterHrsChgUpPct > 0.5 && $dayTrendUp) {
-			    array_push($upAndUpFilterGt05, $day);
-            }
-		// If after hours started day down and day close was down, file that into our $downAndDown array
-		if ($down && $dayTrendDown ) {
-			array_push($downAndDown, $day);
 		}
 	}
 
@@ -139,3 +146,22 @@ require_once("./header.php");
         <div class="ui-bg-lightest ui-font-darkest value"><span><?php echo count($upAndUpFilterGt05); ?></span></div>
     </div>
 </div>
+<div class="table-container">
+    <h3>upAndUpFilterGt05</h3>
+    <table id="upAndUpFilterGt05" name="upAndUpFilterGt05">
+        <th>After Hours Chg</th>
+        <th>After Hours Pct</th>
+        <th>Day Close Change</th>
+        <th>Day Close Pct</th>
+
+<?php foreach ($upAndUpFilterGt05 as $day):?>
+    <tr>
+        <td><?php echo floor($day->afterHrsChg*100)/100;?></td>
+        <td><?php echo floor($day->afterHrsChgUpPct*100)/100;?></td>
+        <td><?php echo floor($day->amountChgUpUp*100)/100;?></td>
+        <td><?php echo floor($day->pctChgUpUp*100)/100;?></td>
+    </tr>
+<?php endforeach;?>
+    </table>
+</div>
+

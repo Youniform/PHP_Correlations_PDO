@@ -32,6 +32,14 @@
     color: #00ddfa;
 }
 
+.table-container {
+    position:relative;
+    width:80%;
+    height:auto;
+    margin:0 auto;
+    border:2px solid #00b3cb;
+    text-align:center;
+}
 .data-container {
     width:80%;
     display:flex;
@@ -42,7 +50,22 @@
     align-items:center;
     padding:10px;
     flex-direction:column;
+    position:relative;
+    margin:0 auto;
 }
+#upAndUpFilterGt05 {
+    text-align:center;
+    margin:0 auto;
+}
+
+#upAndUpFilterGt05 td {
+    border:2px solid black;
+}
+
+#upAndUpFilterGt05 td {
+    text-align: center;
+}
+
 .data-container > div {
     padding:20px;
 }
