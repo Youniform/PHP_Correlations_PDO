@@ -41,11 +41,14 @@ $response = $stmt->fetchall(PDO::FETCH_OBJ);
 
 // Array that holds trends from After Up, Close Up for day
 $upAndUp = array();
+$upAndUpFilterGt05 = array();
 // Array that holds trends from After Down, Close Down for day
 $downAndDown = array();
 // Auto-Incremented value for each loop iteration if it discovers a day where it trended up or down
 $trendUp = 0;
 $trendDown = 0;
+$trendUpFilterGt05 = 0;
+$afterHrsChgUpTotal05 = 0;
 
 // iterator loop value, meaning this is what count out of 0 to 250 (meaning 251 days computers start at 0 like civilized people)
 $i = 0;
@@ -72,35 +75,47 @@ foreach ($response as $day) {
 		$down = $prevDay->Close > $day->Open;
 		$dayTrendUp = $day->Close > $day->Open;
 		$dayTrendDown = $day->Open > $day->Close;
+		$afterHrsChg = $day->Open - $response[$yesterday]->Close;
+		$afterHrsChgUpPct = $afterHrsChg / $response[$yesterday]->Close*100;
+		$amountChgUpUp = $day->Close - $day->Open;
+		$pctChgUpUp = $amountChgUpUp / $day->Open *100;
 
 		// If the after hours started up for that day, auto increment the trendUp value
 		if ($up) {
 			$trendUp++;
-		}		
+		}
+		if ($up && $afterHrsChgUpPct > 0.5) {
+		    $afterHrsChgUpTotal05++;
+        }
 		// If the after hours started down for that day, auto increment the trendDown value
 		if ($down) {
 			$trendDown++;
 		}
 		// If after hours started day up and day close was up, file that into our $upAndUp array
-		if ($up && $dayTrendUp) {
-			array_push($upAndUp, $day);
-
-		}
+        if ($up and $dayTrendUp) {
+            array_push($upAndUp, $day);
+            }
+		if ($up && $afterHrsChgUpPct > 0.5 && $dayTrendUp) {
+			    array_push($upAndUpFilterGt05, $day);
+            }
 		// If after hours started day down and day close was down, file that into our $downAndDown array
 		if ($down && $dayTrendDown ) {
 			array_push($downAndDown, $day);
 		}
 	}
+
 	$i++;
 }
 
 // a couple stat calculations to show for the year
 $upPercent = count($upAndUp)/$trendUp*100;
+$upAndUpFilterGt05Percent = count($upAndUpFilterGt05)/$afterHrsChgUpTotal05*100;
 $downPercent = count($downAndDown)/$trendDown*100;
 $data = array(
     "Total-Sample-Size" => count($response),
     "OvernightUp+DayCloseUp-Percent:" => floor($upPercent*100)/100 . "%",
-    "OvernightDown+DayCloseDown-Percent:" => floor($downPercent*100)/100 . "&",
+    "OverNightUp-Filter-GT-05-DayCloseUp-Percent" => floor($upAndUpFilterGt05Percent*100)/100 . "%",
+    "OvernightDown+DayCloseDown-Percent:" => floor($downPercent*100)/100 . "%",
     "TrendUp-Count:" => $trendUp,
     "TrendDown-Count:" => $trendDown,
     "DownAndDown-Total:" =>count($downAndDown),
@@ -115,18 +130,12 @@ require_once("./header.php");
             <h3><?php echo $tableName;?></h3>
             <?php foreach($data as $key=>$value):?>
                 <div class="ui-bg-darkest ui-font-lightest key"><span><?php echo $key;?></span></div>
-                <?php if (100 >= $value && 52 <= $value):?>
+                <?php if (100 >= $value && 50< $value):?>
                     <div class="trendIndicator"><span><?php echo $value;?></span></div>
                 <?php else:?>
                     <div class="ui-bg-lightest ui-font-darkest value"><span><?php echo $value; ?></span></div>
                 <?php endif;?>
             <?php endforeach;?>
+        <div class="ui-bg-lightest ui-font-darkest value"><span><?php echo count($upAndUpFilterGt05); ?></span></div>
     </div>
 </div>
-<h3>Results from 2020-2021 Dow Jones Industrial Average</h3>";
-
-Total population size:" . count($response) . "<br/>";
-echo "AfterHoursUp and DayCloseUp: " . count($upAndUp)  . "<br/>  Occurance: " . floor($upPercent*100)/100 . "%<br/>";
-echo "AfterHoursDown and DayCloseDown" . count($downAndDown) . "<br/>  Occurance: " . floor($downPercent*100)/100 . "%<br/>";
-
-
