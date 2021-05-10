@@ -4,9 +4,8 @@
 }
 .outer-container {
     width:100%;
-    padding:20px;
     height:auto;
-    display:flex;
+    display:block;
 }
 .ui-bg-darkest {
     background-color:#007585;
@@ -32,6 +31,16 @@
     color: #00ddfa;
 }
 
+.visibility-toggle .parent-container {
+    display: none;
+    height:0;
+}
+
+.visibility-toggle:focus, .visibility-toggle:focus-within > .parent-container {
+    display: block;
+    height:auto;
+}
+
 .table-container {
     position:relative;
     width:80%;
@@ -40,19 +49,20 @@
     border:2px solid #00b3cb;
     text-align:center;
 }
-.data-container {
+.parent-container {
+    max-width:100%;
+
+}
+.visibility-toggle {
+    border:4px solid #00b3cb;
     width:80%;
-    display:flex;
-    align-self:center;
-    vertical-align:center;
-    justify-self:center;
-    border:4px solid black;
-    align-items:center;
-    padding:10px;
-    flex-direction:column;
-    position:relative;
+    display:block;
     margin:0 auto;
 }
+.visibility-toggle h3 {
+    text-align: center;
+}
+
 #upAndUpFilterGt05 {
     text-align:center;
     margin:0 auto;
@@ -66,22 +76,73 @@
     text-align: center;
 }
 
-.data-container > div {
-    padding:20px;
-}
 .key {
-    width:50%;
+    width:100%;
     border-bottom:#00b3cb 4px solid;
 }
 
+.key, .value {
+    display:block;
+    padding-top:20px;
+    padding-bottom:20px;
+}
+.span-label {
+    background:#fff;
+    position:relative;
+    display:block;
+    margin:0 auto;
+    padding:5px;
+    text-align:center;
+    color:black;
+}
+.key span, .value span, .trendIndicator span {
+    padding-left:10px;
+}
+
+.form-div {
+    display:block;
+    margin:0 auto;
+    width:50%;
+    position:relative;
+}
+.form-div form {
+    text-align:center;
+}
+.form-div form > * {
+    margin-top:5px;
+}
 .trendIndicator {
     background:#333;
     color:yellow;
-    width:50%;
+    width:100%;
     border-top:yellow 2px solid;
     border-bottom:yellow 2px solid;
+    padding-top:20px;
+    padding-bottom:20px;
 }
+
 .value {
-    width:50%;
+    width:100%;
     border-bottom:#00b3cb 4px solid;
+}
+
+.visibility-toggle {
+    padding-top:50px;
+    padding-bottom:50px;
+    width:40%;
+    height:auto;
+    margin-top:50px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.visibility-toggle {
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.parent-container {
+    transition: height 1.5s ease-in-out;
+}
+.visibility-toggle:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
