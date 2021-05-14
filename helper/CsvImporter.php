@@ -1,15 +1,14 @@
 <?php
-
-class CsvImporter
-{
-    public function __construct() {
-        $uploaded_file = $_FILES['historic-csv']['tmp_name'];
-        $givenName = $_FILES['historic-csv']['name'];
+require_once("../class/BaseClass.php");
+new BaseClass();
+class CsvImporter extends BaseClass {
+    __construct() {
+        $this->uploaded_file = $_FILES['historic-csv']['tmp_name'];
+        $this->givenName = $_FILES['historic-csv']['name';
     }
-
-    private function sterilize($fileName) {
-        $filterRegex = preg_match("[^a-zA-Z0-9 -]", $fileName);
-        var_dump($filterRegex);
+    private function test_given_name($givenName) {
+        $wash = $this->sterilize($givenName);
+        return $wash;
     }
 
     private function db_interact($tableName)
