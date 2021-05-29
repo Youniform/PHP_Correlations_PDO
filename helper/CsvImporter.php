@@ -1,40 +1,31 @@
 <?php
-require_once("../class/BaseClass.php");
-new BaseClass();
-class CsvImporter extends BaseClass {
-    __construct() {
+class CsvImporter {
+    function __construct() {
         $this->uploaded_file = $_FILES['historic-csv']['tmp_name'];
-        $this->givenName = $_FILES['historic-csv']['name';
-    }
-    private function test_given_name($givenName) {
-        $wash = $this->sterilize($givenName);
-        return $wash;
+        $this->givenName = $_FILES['historic-csv']['name'];
+        echo "ion construct:";
     }
 
-    private function db_interact($tableName)
+    private function dbInteract()
     {
-        var_dump($tableName);
         $databasehost = "localhost";
         $databasename = "index_correlations";
 
-        $databasetable = "";
+        $databasetable = $this->givenName;
 
-        $databaseusername = "test";
-        $databasepassword = "";
+        $databaseusername = "youniform";
+        $databasepassword = "il1keSn0w!!";
 
         $fieldseparator = ",";
         $lineseparator = "\n";
 
-        $csvfile = $uploaded_file;
+        $csvfile = $this->uploaded_file;
 
 
         if (!file_exists($csvfile)) {
             die("File not found. Make sure you specified the correct path.");
         }
-
-
         try {
-
             $pdo = new PDO(
                 "mysql:host=$databasehost;dbname=$databasename",
                 $databaseusername,
@@ -58,6 +49,16 @@ class CsvImporter extends BaseClass {
             . "LINES TERMINATED BY "
             . $pdo->quote($lineseparator)
         );
-        echo "Loaded a total of $affectedRows records from this csv file.\n";
+        if (!is_null($affectedRows) && $affectedRows > 0) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    public function init() {
+        $status = $this->dbInteract();
+        $data['status'] = $status;
+        require_once("../view/SuccessfulImportView.php"); 
     }
 }

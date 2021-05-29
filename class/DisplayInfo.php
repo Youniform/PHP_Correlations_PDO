@@ -6,8 +6,7 @@ Class DisplayInfo {
         // Haha just kidding, there's no functionality at all to have a placeholder for table in SELECT * FROM table
         // the fucking fuck? safety first boys!!
         $this->tableName = $tableName;
-        $this->data;
-        $this->init();
+        $this->data = "";
     }
 
     private function dbConn()
@@ -55,12 +54,19 @@ Class DisplayInfo {
 
     public function init()
     {
-        $pdo = $this->dbConn();
+        require_once(CLASSDIR."/DbConn.php");
+        $DB = new DbConn();
+        $pdo = $DB->getPdo();
         $response = $this->query($this->tableName, $pdo);
-        // pull in the thinking function
-        require_once("../oge/RasnepAfterHours.php");
+        if (null === $response) {
+            echo "response empty";
+            die();
+        }
+            // pull in the thinking function
+        require_once(PRJ_ROOT."/oge/RasnepAfterHours.php");
         $rasnep = new RasnepAfterHours($response);
-        $this->data = $rasnep;
-        require_once("../view/DisplayInfoView.php");
+        $this->data = $rasnep->init();
+        $this->data["tableName"] = $this->tableName;
+        require_once(VIEW."/DisplayInfoView.php");
     }
 }

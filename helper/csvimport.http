@@ -1,0 +1,10 @@
+POST http://analyze.local/import
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="csv-file"; filename="XLE-entire-history.csv"
+
+< /home/youniorm/Downloads/XLE-entire-history.csv
+--WebAppBoundary--
+
+###

@@ -1,16 +1,11 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set('display_errors', '1');
-
 /**
  * Setting up the database connection for PDO (PHP Data Object)
  */
-$dbname = "index_correlations";
-$dbuser = "youniform";
-$dbpass = "il1keSn0w!!";
-$host = "localhost";
-$pdo = new PDO("mysql:host=$host;dbname=$dbname", $dbuser, $dbpass);
+require_once(CLASSDIR . "/DbConn.php");
+$dbClass = new DbConn();
+$pdo = $dbClass->getPdo();
 /**
  * This SQL query will need to incorporate a variable placeholder for the table name
  */
@@ -36,26 +31,26 @@ $tables = $response;
         <span class="span-label">Choose an existing database table to analyze</span>
         <div class="parent-container">
             <div class="form-div">
-                <form name="table-choice" class="table-choice" method="/display" action="POST">
-                <label for="tableChoice">Choose Table:</label>
-                    <select name="tableChoice">
+                <form name="table-choice" class="table-choice" method="POST" action="/display">
+                    <label for="tableChoice">Choose Table:</label>
+                    <div class="tableChoice">
                     <?php foreach($tables as $table):?>
-                    <?php $value = $table; ?>
-                        <option name="table-name" value="<?php print_r($value['Tables_in_index_correlations']); ?>"><?php print_r($value['Tables_in_index_correlations']); ?></option>
+                    <?php echo '<a href=/display/'.$table["Tables_in_index_correlations"].'>'.$table["Tables_in_index_correlations"].'</a><br/>';?>
                     <?php endforeach;?>
-                    </select>
-                    <input type="submit"/>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
     <div class="visibility-toggle" tabindex="1">
-        <span class="span-label">Choose an CSV file to import to MYSql Table</span>
+        <span class="span-label">Choose a CSV file to import to MySQL Table</span>
         <div class="parent-container">
             <div class="form-div">
-                <form name="table-choice" class="table-choice" method="/import" action="POST">
-                    <label for="fileChoice">Choose File:</label>
+                <form name="table-choice" class="table-choice" method="POST" action="/import" enctype="multipart/form-data">
+                    <input type="hidden" name="MAX_FILE_SIZE" value="30000" />
+                    <label for="csv-file">CSV Files, sourced exclusively from finance.yahoo.com Historical Data</label>
                     <input type="file" name="csv-file" />
+                    <input type="submit" value="Send File"/>
                 </form>
             </div>
         </div>

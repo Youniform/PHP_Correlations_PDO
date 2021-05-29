@@ -2,7 +2,7 @@
 
 
 class BaseClass {
-    __construct(){
+    function __construct(){
 
     }
     public static function sterilize($userString) {
