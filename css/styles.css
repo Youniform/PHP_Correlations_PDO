@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Raleway&display=swap');
+/**
+table-week color: #34ebbd
+ */
 * {
     font-family:"Raleway", "sans-serif";
 }
@@ -40,7 +43,15 @@
     display: block;
     height:auto;
 }
-
+.tool-panel {
+    width: 150px;
+    left:0;
+    float:left;
+    position:relative;
+    height:75px;
+    background-size: contain;
+    background:url("/view/instruments.jpg");
+}
 .table-container {
     position:relative;
     width:80%;
@@ -54,11 +65,12 @@
 
 }
 .visibility-toggle {
-    border:4px solid #00b3cb;
+    border:4px solid grey;
     font-size:24px;
     width:90%;
     display:block;
     margin:0 auto;
+    overflow-x:hidden;
 }
 
 .visibility-toggle h3 {
@@ -68,10 +80,6 @@
 #upAndUpFilterGt05 {
     text-align:center;
     margin:0 auto;
-}
-
-#upAndUpFilterGt05 td {
-    border:2px solid black;
 }
 
 #upAndUpFilterGt05 td {
@@ -122,6 +130,14 @@
     padding-top:20px;
     padding-bottom:20px;
 }
+.turn-grey {
+    text-align:center;
+    border-top:10px grey solid;
+    border-bottom:10px grey solid;
+}
+.turn-grey p {
+    font-size:16px;
+}
 
 .value {
     width:100%;
@@ -157,4 +173,67 @@ form label {
 
 form input[type=file] {
     margin-top:10px;
+}
+#upAndUpFilterGt05 {
+    border-collapse:separate;
+    border-spacing:0 15px;
+}
+
+#upAndUpFilterGt05 td {
+    border:1px solid grey;
+}
+#upAndUpFilterGt05 .Monday {
+    border: #fcad03 2px dashed;
+    border-left:none;
+    border-right:none;
+    margin-top:2px;
+    margin-bottom:2px;
+}
+#upAndUpFilterGt05 .Friday {
+    border: #fcad03 2px solid;
+    border-left:none;
+    border-right:none;
+    margin-top:2px;
+    margin-bottom:2px;
+}
+.toolkit {
+    width:200px;
+    height:80px;
+    border:2px solid #333;
+    background-color:black;
+    position:sticky;
+    margin-left:-175px;
+    top:350px;
+    transition: margin-left 500ms;
+}
+
+
+#upAndUpFilterGt05 th {
+    background-color:#333;
+    color:#fff;
+    position:sticky;
+    top:0;
+}
+.arrow-right {
+    width:20px;
+    height:20px;
+    right:7px;
+    top:30px;
+    color:yellow;
+    position:absolute;
+    z-index:2;
+    font-size:20px;
+    float:right;
+}
+.arrow-right:after {
+    content:"🪗";
+}
+
+.showing {
+    margin-left:0;
+}
+.clear {
+    clear:both;
+    float:none;
+    width:100%;
 }

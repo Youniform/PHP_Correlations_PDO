@@ -1,13 +1,14 @@
 <?php
 class RasnepAfterHours {
-    function __construct($response) {
+    function __construct($response)
+    {
         $this->response = $response;
         // Arrays that hold trends from After Up, Close Up for day
         $this->upAndUp = array();
         $this->upAndUpFilterGt05 = array();
-            // Array that holds trends from After Down, Close Down for day
+        // Array that holds trends from After Down, Close Down for day
         $this->downAndDown = array();
-            // Auto-Incremented value for each loop iteration if it discovers a day where it trended up or down
+        // Auto-Incremented value for each loop iteration if it discovers a day where it trended up or down
         $this->trendUp = 0;
         $this->trendDown = 0;
         $this->afterHrsChgUpTotal05 = 0;
@@ -21,6 +22,11 @@ class RasnepAfterHours {
     // for every row ($day) that was returned with the $response object. We could've technically called $day or $row
     // this is where you set the $varname for how you'll reference each iteration within the loop.
     foreach ($response as $day) {
+        $dayOfWeek = $this->calcDay($day->Date);
+        $day->dayOfWeek = $dayOfWeek;
+        $markers = $this->specialMarkerTest($day->Date);
+        $day->markers = $markers;
+
         if ($i === 0) {
             // something better than this can fill this do nothing area, its just to not fall into a pitfall for 0
             echo "do nothing";
@@ -98,6 +104,55 @@ class RasnepAfterHours {
             "DayTrendFilterGt05UpUp" => $this->upAndUpFilterGt05
         ));
     return $data;
+    }
+    public function specialMarkerTest($date) {
+        $splode = explode("-", $date);
+        $day = $splode[1];
+        $month = $splode[0];
+        $year = $splode[2];
+        $markers = array();
+        // test for holiday returns
+        // quarterly changes
+        // Jan 1 - March 31
+        // April 1 - June 30
+        // July 1 - Sep 30
+        // Oct 1 - Dec 31
+        if ($day === "03" && $month === "01") {
+            $marker = "Q1";
+            array_push($markers, $marker);
+        }
+        if ($day === "04" && $month === "01") {
+            $marker = "Q1";
+            array_push($markers, $marker);
+        }
+        if ($day === "01" && $month === "04") {
+            $marker = "Q2";
+            array_push($markers, $marker);
+        }
+        if ($day === "01" && $month === "07") {
+            $marker = "Q3";
+            array_push($markers, $marker);
+        }
+        if ($day === "01" && $month === "10") {
+            $marker = "Q4";
+            array_push($markers, $marker);
+        }
+        return $markers;
+    }
+
+    /**
+     * This is shamelessly plagiarized from somewhere in the top search results from google to solve this problem
+     */
+    public function calcDay(string $date) {
+
+        //Convert the date string into a unix timestamp.
+        $unixTimestamp = strtotime($date);
+
+        //Get the day of the week using PHP's date function.
+        $dayOfWeek = date("l", $unixTimestamp);
+
+        //Print out the day that our date fell on.
+        return $dayOfWeek;
     }
     public function init(){
         return $this->originalCalculations($this->response);

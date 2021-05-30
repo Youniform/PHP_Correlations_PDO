@@ -52,6 +52,7 @@ Class DisplayInfo {
         }
     }
 
+
     public function init()
     {
         require_once(CLASSDIR."/DbConn.php");

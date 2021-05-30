@@ -1,3 +1,8 @@
+AuthName "Secure Document"
+AuthUserFile /var/www/PHP_Correlations_PDO/.htpasswd
+AuthType Basic
+require valid-user
+
 <IfModule mod_rewrite.c>
 	RewriteEngine on
 	RewriteCond %{REQUEST_FILENAME} !-f
