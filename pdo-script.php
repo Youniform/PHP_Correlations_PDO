@@ -6,8 +6,8 @@ ini_set('display_errors','1');
 * Setting up the database connection for PDO (PHP Data Object)
 */
 $dbname = "index_correlations";
-$dbuser = "youniform";
-$dbpass = "il1keSn0w!!";
+$dbuser = "******";
+$dbpass = "******";
 $host = "localhost";
 $pdo = new PDO("mysql:host=$host;dbname=$dbname", $dbuser, $dbpass);
 $tableName = "DIA-entire-history";
